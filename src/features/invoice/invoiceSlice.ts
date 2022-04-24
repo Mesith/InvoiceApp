@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import { and } from 'react-native-reanimated';
+import {and} from 'react-native-reanimated';
 import {apiSlice} from './invoiceApiSlice';
 
 // Invoice related  API state handle here . for example when scrolled down to list and
@@ -7,10 +7,12 @@ import {apiSlice} from './invoiceApiSlice';
 
 interface InvoiceState {
   isListEnd: boolean;
+  invoiceCreated: boolean;
 }
 
 const initialState: InvoiceState = {
   isListEnd: false,
+  invoiceCreated: false,
 };
 
 const invoiceSlice = createSlice({
@@ -20,6 +22,9 @@ const invoiceSlice = createSlice({
     setInvoiceListEnd(state, action: PayloadAction<boolean>) {
       state.isListEnd = action.payload;
     },
+    setInvoiceCreated(state, action: PayloadAction<boolean>) {
+      state.invoiceCreated = action.payload;
+    },
   },
   extraReducers: builder => {
     builder.addMatcher(
@@ -28,8 +33,14 @@ const invoiceSlice = createSlice({
         state.isListEnd = false;
       },
     );
+    builder.addMatcher(
+      apiSlice.endpoints.createInvoice.matchFulfilled,
+      state => {
+        state.invoiceCreated = true;
+      },
+    );
   },
 });
 
-export const {setInvoiceListEnd} = invoiceSlice.actions;
+export const {setInvoiceListEnd, setInvoiceCreated} = invoiceSlice.actions;
 export default invoiceSlice.reducer;

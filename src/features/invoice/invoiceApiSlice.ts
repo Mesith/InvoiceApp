@@ -4,7 +4,6 @@ import type {RootState} from '../../app/store';
 export const CLIENT_ID = 'oO8BMTesSg9Vl3_jAyKpbOd2fIEa';
 export const CLIENT_SECRET = '0Exp4dwqmpON_ezyhfm0o_Xkowka';
 
-
 // All API end points defind here. execute usig RTK query
 
 interface Breed {
@@ -89,7 +88,6 @@ export const apiSlice = createApi({
           method: 'POST',
           headers: {
             Accept: 'application/json',
-            'Operation-Mode': 'SYNC',
           },
           body: data,
         }),

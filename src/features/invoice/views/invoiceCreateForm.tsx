@@ -1,6 +1,6 @@
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Field, Form} from 'react-final-form';
 import {
   Button,
@@ -17,35 +17,54 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
+import {useSelector} from 'react-redux';
+import {useAppDispatch} from '../../../app/hooks';
 import initialData from '../../../app/invoicIntialData.json';
 import {useCreateInvoiceMutation} from '../invoiceApiSlice';
+import {setInvoiceCreated} from '../invoiceSlice';
 import AddInvoiceModal, {InvoiceItem} from './inviceItem';
 
 export const TextField = (props: {
   placeholder: string;
   value: string;
   onChange: (evt: any) => void;
+  error: string;
+  isError: boolean;
   keyboardType?: string;
   multiline?: boolean;
 }) => {
   return (
-    <TextInput
-      value={props.value}
-      onChangeText={props.onChange}
-      placeholder={props.placeholder}
-      style={styles.input}
-      keyboardType={props.keyboardType ? props.keyboardType : 'default'}
-      multiline={props.multiline ? props.multiline : false}
-    />
+    <>
+      <TextInput
+        value={props?.value}
+        onChangeText={props.onChange}
+        placeholder={props.placeholder}
+        style={styles.input}
+        keyboardType={props.keyboardType ? props.keyboardType : 'default'}
+        multiline={props.multiline ? props.multiline : false}
+      />
+      {props?.isError ? (
+        <Text style={styles.feildError}>{props.error}</Text>
+      ) : null}
+    </>
   );
 };
 
-const InvoiceCreateForm = () => {
+const InvoiceCreateForm = (props: {navigation}) => {
+  const state: any = useSelector(state => state);
+  const dispatch = useAppDispatch();
   const [createInvoice, {isLoading, error}] = useCreateInvoiceMutation();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const onSubmit = (values: any) => {
     createInvoice(values);
   };
+
+  useEffect(() => {
+    if (state.invoice.invoiceCreated) {
+      props.navigation.navigate('Invoices');
+      dispatch(setInvoiceCreated(false));
+    }
+  }, [state.invoice.invoiceCreated]);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -59,8 +78,29 @@ const InvoiceCreateForm = () => {
           <Form
             onSubmit={onSubmit}
             initialValues={initialData.listOfInvoices[0]}
-            //validate={validate}
-            render={({handleSubmit, values}) => (
+            validate={values => {
+              const errors: any = {
+                customer: {firstName: '', contact: {email: ''}},
+              };
+              if (!values.customer.firstName) {
+                errors.customer.firstName = 'Required!';
+              }
+              if (!values.customer.lastName) {
+                errors.customer.lastName = 'Required!';
+              }
+              if (!values.customer.contact.mobileNumber) {
+                errors.customer.contact.mobileNumber = 'Required!';
+              }
+              if (!values.customer.contact.email) {
+                errors.customer.contact.email = 'Required!';
+              }
+              let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+              if (reg.test(values.customer.contact.email) === false) {
+                errors.customer.contact.email = 'Email is Not Correct!';
+              }
+              return errors;
+            }}
+            render={({handleSubmit, values, errors}) => (
               <View style={styles.container}>
                 {error && (
                   <Text style={styles.error}>Something Went wrong !!</Text>
@@ -68,42 +108,50 @@ const InvoiceCreateForm = () => {
                 <View style={styles.card}>
                   <Text style={styles.subHeader}>Customer</Text>
                   <Field name="customer.firstName">
-                    {({input}) => (
+                    {({input, meta}) => (
                       <TextField
                         value={values.customer.firstName}
                         onChange={input.onChange}
                         placeholder="First Name"
+                        isError={meta.error && meta.touched}
+                        error={errors.customer.firstName}
                       />
                     )}
                   </Field>
                   <Field name="customer.lastName">
-                    {({input}) => (
+                    {({input, meta}) => (
                       <TextField
                         value={values.customer.lastName}
                         onChange={input.onChange}
                         placeholder="Last Name"
+                        isError={meta.error && meta.touched}
+                        error={errors.customer.lastName}
                       />
                     )}
                   </Field>
 
                   <Field name="customer.contact.email">
-                    {({input}) => (
+                    {({input, meta}) => (
                       <TextField
                         value={values.customer.contact.email}
                         onChange={input.onChange}
                         placeholder="Email"
                         keyboardType={'email-address'}
+                        isError={meta.error && meta.touched}
+                        error={errors.customer.contact.email}
                       />
                     )}
                   </Field>
 
                   <Field name="customer.contact.mobileNumber">
-                    {({input}) => (
+                    {({input, meta}) => (
                       <TextField
                         value={values.customer.contact.mobileNumber}
                         onChange={input.onChange}
                         placeholder="Mobile No"
                         keyboardType={'phone-pad'}
+                        isError={meta.error && meta.touched}
+                        error={errors.customer.contact.mobileNumber}
                       />
                     )}
                   </Field>
@@ -177,6 +225,8 @@ const InvoiceCreateForm = () => {
                         onChange={input.onChange}
                         placeholder="Description"
                         multiline={true}
+                        isError={false}
+                        error={''}
                       />
                     )}
                   </Field>
@@ -268,6 +318,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.9,
     display: 'flex',
   },
+  feildError: {color: 'red', fontSize: 10, marginLeft: 20},
   picker: {flex: 1},
   button: {
     backgroundColor: '#228FDF',

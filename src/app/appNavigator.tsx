@@ -18,7 +18,7 @@ import {
   useFetchMeQuery,
   useLoginMutation,
 } from '../features/invoice/invoiceApiSlice';
-import { useAppDispatch } from './hooks';
+import {useAppDispatch} from './hooks';
 
 // @ts-ignore
 export const AuthContext: any = React.createContext<any>();

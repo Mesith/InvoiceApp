@@ -8,10 +8,10 @@
         "accountName": "John Terry"
       },
       "customer": {
-        "firstName": "Mesith",
-        "lastName": "Nalaka",
+        "firstName": "",
+        "lastName": "",
         "contact": {
-          "email": "ccc",
+          "email": "",
           "mobileNumber": ""
         },
         "addresses": [

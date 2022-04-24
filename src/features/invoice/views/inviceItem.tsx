@@ -90,32 +90,38 @@ const AddInvoiceModal = (props: {
             render={({handleSubmit, values}) => (
               <View style={styles.formContainer}>
                 <Field name="itemName">
-                  {({input}) => (
+                  {({input, meta}) => (
                     <TextField
                       value={values.itemName}
                       onChange={input.onChange}
                       placeholder="Name"
+                      isError={meta.error}
+                      error={''}
                     />
                   )}
                 </Field>
 
                 <Field name="quantity">
-                  {({input}) => (
+                  {({input, meta}) => (
                     <TextField
                       value={values.quantity}
                       onChange={input.onChange}
                       placeholder="Quantity"
+                      isError={meta.error}
+                      error={''}
                     />
                   )}
                 </Field>
 
                 <Field name="rate">
-                  {({input}) => (
+                  {({input, meta}) => (
                     <TextField
                       value={values.rate}
                       onChange={input.onChange}
                       placeholder="Rate"
                       keyboardType="number-pad"
+                      isError={meta.error}
+                      error={''}
                     />
                   )}
                 </Field>

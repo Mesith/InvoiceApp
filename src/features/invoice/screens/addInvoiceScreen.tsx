@@ -1,11 +1,12 @@
 import * as React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Text} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import InvoiceCreateForm from '../views/invoiceCreateForm';
 
-const AddInvoiceScreen = () => {
+const AddInvoiceScreen = ({navigation}) => {
   return (
     <View style={style.createInvoiceView}>
-      <InvoiceCreateForm />
+      <InvoiceCreateForm navigation={navigation} />
     </View>
   );
 };
